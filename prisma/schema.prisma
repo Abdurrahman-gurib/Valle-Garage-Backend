@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MECHANIC
+  STORE_KEEPER
+}
+
+enum VehicleStatus {
+  ACTIVE
+  UNDER_REPAIR
+  OUT_OF_SERVICE
+  BUILD_IN_PROGRESS
+  BUILT_TESTING
+  DELIVERED
+}
+
+enum VehicleOwnership {
+  INTERNAL
+  EXTERNAL
+  CUSTOMER_ORDER
+}
+
+enum AssessmentStatus {
+  OPEN
+  IN_PROGRESS
+  READY_FOR_PARTS
+  PARTS_ISSUED
+  COMPLETED
+  REOPENED
+}
+
+enum GarageProcessType {
+  REPAIR
+  MAINTENANCE
+  SERVICING
+  ASSEMBLY
+  TESTING
+}
+
+enum GarageStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TransactionType {
+  PART_PURCHASE
+  VEHICLE_ORDER
+  SERVICE_INVOICE
+}
+
+enum TransactionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  PAID
+  CANCELLED
+}
+
+model User {
+  id                  String            @id @default(uuid())
+  name                String
+  email               String            @unique
+  passwordHash        String
+  role                Role
+  isActive            Boolean           @default(true)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  createdVehicles     Vehicle[]         @relation("VehicleCreatedBy")
+  mechanicAssessments Assessment[]      @relation("AssessmentMechanic")
+  reopenedAssessments Assessment[]      @relation("AssessmentReopenedBy")
+  garageOps           GarageOperation[]
+  transactions         Transaction[]
+}
+
+model Vehicle {
+  id                   String           @id @default(uuid())
+  plateNumber          String           @unique
+  vin                  String?
+  vehicleType          String
+  ownership            VehicleOwnership @default(INTERNAL)
+  ownerName            String?
+  companyName          String?
+  deliveryPersonName   String?
+  contactNumber        String?
+  email                String?
+  manufacturer         String?
+  status               VehicleStatus    @default(ACTIVE)
+  currentHourMeter     Int              @default(0)
+  checkInDateTime      DateTime?
+  expectedDeliveryDate DateTime?
+  notes                String?
+  createdById          String?
+  createdBy            User?            @relation("VehicleCreatedBy", fields: [createdById], references: [id])
+  transactionId        String?
+  transaction          Transaction?     @relation(fields: [transactionId], references: [id])
+  assessments          Assessment[]
+  garageOps            GarageOperation[]
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+}
+
+model Assessment {
+  id             String           @id @default(uuid())
+  ticketNo       String           @unique
+  vehicleId      String
+  vehicle        Vehicle          @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  mechanicId     String?
+  mechanic       User?            @relation("AssessmentMechanic", fields: [mechanicId], references: [id])
+  status         AssessmentStatus @default(OPEN)
+  issuesDetected String
+  conclusion     String?
+  requiredParts  Json?
+  reopenReason   String?
+  reopenedById   String?
+  reopenedBy     User?            @relation("AssessmentReopenedBy", fields: [reopenedById], references: [id])
+  reopenedAt     DateTime?
+  photos         Json?
+  garageOps      GarageOperation[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model InventoryItem {
+  id            String   @id @default(uuid())
+  sku           String   @unique
+  name          String
+  category      String?
+  barcode       String?  @unique
+  currentStock  Int      @default(0)
+  reorderLevel  Int      @default(0)
+  costPrice     Decimal? @db.Decimal(12, 2)
+  sellingPrice  Decimal? @db.Decimal(12, 2)
+  supplierName  String?
+  supplierEmail String?
+  location      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model GarageOperation {
+  id                    String            @id @default(uuid())
+  processNo             String            @unique
+  vehicleId             String
+  vehicle               Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  assessmentId          String?
+  assessment            Assessment?       @relation(fields: [assessmentId], references: [id])
+  processType           GarageProcessType
+  status                GarageStatus      @default(PENDING)
+  proceduresPerformed   String?
+  partsUsed             Json?
+  mechanicId            String?
+  mechanic              User?             @relation(fields: [mechanicId], references: [id])
+  checkInDateTime       DateTime?
+  startDateTime         DateTime?
+  endDateTime           DateTime?
+  laborHours            Decimal?          @db.Decimal(8, 2)
+  currentHourMeter      Int?
+  nextServiceDueAtHours Int?
+  invoiceAttachmentUrl  String?
+  paymentDone           Boolean           @default(false)
+  photos                Json?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+}
+
+model Transaction {
+  id                   String            @id @default(uuid())
+  transactionNo        String            @unique
+  type                 TransactionType
+  status               TransactionStatus @default(PENDING)
+  title                String
+  supplierName         String?
+  supplierEmail        String?
+  customerName         String?
+  startDate            DateTime?
+  expectedDeliveryDate DateTime?
+  poNumber             String?
+  poAttachmentUrl      String?
+  invoiceAttachmentUrl String?
+  grnAttachmentUrl     String?
+  grnData              Json?
+  amount               Decimal?          @db.Decimal(12, 2)
+  notes                String?
+  createdById          String?
+  createdBy            User?             @relation(fields: [createdById], references: [id])
+  vehicles             Vehicle[]
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  role      Role?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
