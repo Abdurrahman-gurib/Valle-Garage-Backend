@@ -1,0 +1,73 @@
+[
+  {
+    "name": "Protected route without token should be rejected",
+    "method": "GET",
+    "path": "/vehicles",
+    "expected": "401",
+    "actual_status": 0,
+    "passed": false,
+    "payload": null,
+    "response_preview": null,
+    "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  },
+  {
+    "name": "Login as admin",
+    "method": "POST",
+    "path": "/auth/login",
+    "expected": "201",
+    "actual_status": 0,
+    "passed": false,
+    "payload": {
+      "email": "admin@valle.com",
+      "password": "admin123",
+      "role": "admin"
+    },
+    "response_preview": null,
+    "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  },
+  {
+    "name": "Login as mechanic",
+    "method": "POST",
+    "path": "/auth/login",
+    "expected": "201",
+    "actual_status": 0,
+    "passed": false,
+    "payload": {
+      "email": "mechanic@valle.com",
+      "password": "mech123",
+      "role": "mechanic"
+    },
+    "response_preview": null,
+    "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  },
+  {
+    "name": "Login as store",
+    "method": "POST",
+    "path": "/auth/login",
+    "expected": "201",
+    "actual_status": 0,
+    "passed": false,
+    "payload": {
+      "email": "store@valle.com",
+      "password": "store123",
+      "role": "store"
+    },
+    "response_preview": null,
+    "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  },
+  {
+    "name": "Invalid password rejected",
+    "method": "POST",
+    "path": "/auth/login",
+    "expected": "401",
+    "actual_status": 0,
+    "passed": false,
+    "payload": {
+      "email": "admin@valle.com",
+      "password": "wrong",
+      "role": "admin"
+    },
+    "response_preview": null,
+    "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  }
+]

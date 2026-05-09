@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Login as admin",
+    "method": "POST",
+    "path": "/auth/login",
+    "payload": {
+      "email": "admin@valle.com",
+      "password": "admin123",
+      "role": "admin"
+    }
+  },
+  {
+    "name": "Login as mechanic",
+    "method": "POST",
+    "path": "/auth/login",
+    "payload": {
+      "email": "mechanic@valle.com",
+      "password": "mech123",
+      "role": "mechanic"
+    }
+  },
+  {
+    "name": "Login as store",
+    "method": "POST",
+    "path": "/auth/login",
+    "payload": {
+      "email": "store@valle.com",
+      "password": "store123",
+      "role": "store"
+    }
+  },
+  {
+    "name": "Invalid password rejected",
+    "method": "POST",
+    "path": "/auth/login",
+    "payload": {
+      "email": "admin@valle.com",
+      "password": "wrong",
+      "role": "admin"
+    }
+  }
+]
