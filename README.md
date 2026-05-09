@@ -157,3 +157,48 @@ pm2 save
 ```powershell
 npx prisma studio
 ```
+
+---
+
+## API Test Bot
+
+This project includes a Python Postman-like test bot that validates the backend against PostgreSQL and the frontend workflows.
+
+Start the backend first:
+
+```powershell
+npm run start:dev
+```
+
+Then open a second terminal and run:
+
+```powershell
+python tools/api_test_bot.py --base-url http://localhost:3000/api
+```
+
+The bot writes reports to:
+
+```txt
+test-results/
+```
+
+Files generated:
+
+- `api-test-results-<run_id>.json`
+- `api-test-report-<run_id>.md`
+- `api-test-payloads-<run_id>.json`
+
+See:
+
+```txt
+API_TESTING_GUIDE.md
+API_REVIEW_AND_FIX_REPORT.md
+```
+
+## Frontend-compatible demo credentials
+
+```txt
+Admin:        admin@valle.com / admin123
+Mechanic:     mechanic@valle.com / mech123
+Store Keeper: store@valle.com / store123
+```

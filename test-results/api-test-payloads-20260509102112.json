@@ -1,0 +1,367 @@
+[
+  {
+    "name": "Login as admin",
+    "method": "POST",
+    "path": "/auth/login",
+    "payload": {
+      "email": "admin@valle.com",
+      "password": "admin123",
+      "role": "admin"
+    }
+  },
+  {
+    "name": "Login as mechanic",
+    "method": "POST",
+    "path": "/auth/login",
+    "payload": {
+      "email": "mechanic@valle.com",
+      "password": "mech123",
+      "role": "mechanic"
+    }
+  },
+  {
+    "name": "Login as store",
+    "method": "POST",
+    "path": "/auth/login",
+    "payload": {
+      "email": "store@valle.com",
+      "password": "store123",
+      "role": "store"
+    }
+  },
+  {
+    "name": "Invalid password rejected",
+    "method": "POST",
+    "path": "/auth/login",
+    "payload": {
+      "email": "admin@valle.com",
+      "password": "wrong",
+      "role": "admin"
+    }
+  },
+  {
+    "name": "Admin can create user",
+    "method": "POST",
+    "path": "/users",
+    "payload": {
+      "name": "Test Mechanic 20260509102112",
+      "email": "test.mechanic.20260509102112@valle.com",
+      "password": "Test12345",
+      "role": "mechanic",
+      "isActive": true
+    }
+  },
+  {
+    "name": "Admin can update created user",
+    "method": "PATCH",
+    "path": "/users/9803cdba-e0ca-49ad-b69e-cd87143d0770",
+    "payload": {
+      "isActive": true,
+      "name": "Updated Mechanic 20260509102112"
+    }
+  },
+  {
+    "name": "Admin can create transaction / PO",
+    "method": "POST",
+    "path": "/transactions",
+    "payload": {
+      "transactionNo": "TXN-API-20260509102112",
+      "type": "Vehicle Order",
+      "status": "In Progress",
+      "title": "API Customer Quad Build 20260509102112",
+      "customerName": "API Test Customer Ltd",
+      "poNumber": "PO-API-20260509102112",
+      "poAttachmentUrl": "/uploads/po-20260509102112.pdf",
+      "amount": 485000,
+      "startDate": "2026-05-09T06:21:12.810265+00:00",
+      "expectedDeliveryDate": "2026-05-23T06:21:12.810265+00:00",
+      "notes": "Created by API Test Bot."
+    }
+  },
+  {
+    "name": "Mechanic cannot create transaction",
+    "method": "POST",
+    "path": "/transactions",
+    "payload": {
+      "transactionNo": "TXN-DENY-20260509102112",
+      "type": "Vehicle Order",
+      "status": "In Progress",
+      "title": "API Customer Quad Build 20260509102112",
+      "customerName": "API Test Customer Ltd",
+      "poNumber": "PO-API-20260509102112",
+      "poAttachmentUrl": "/uploads/po-20260509102112.pdf",
+      "amount": 485000,
+      "startDate": "2026-05-09T06:21:12.810265+00:00",
+      "expectedDeliveryDate": "2026-05-23T06:21:12.810265+00:00",
+      "notes": "Created by API Test Bot."
+    }
+  },
+  {
+    "name": "Admin can update transaction with invoice/payment status",
+    "method": "PATCH",
+    "path": "/transactions/08465add-b073-46e3-a94d-f8ef7fee0252",
+    "payload": {
+      "status": "Paid",
+      "invoiceAttachmentUrl": "/uploads/invoice-20260509102112.pdf",
+      "notes": "Invoice attached and payment marked paid by test bot."
+    }
+  },
+  {
+    "name": "Admin can complete transaction with GRN",
+    "method": "POST",
+    "path": "/transactions/08465add-b073-46e3-a94d-f8ef7fee0252/complete-with-grn",
+    "payload": {
+      "grnAttachmentUrl": "/uploads/grn-20260509102112.pdf",
+      "grnData": {
+        "receivedBy": "API Tester",
+        "condition": "Good",
+        "receivedDate": "2026-05-09"
+      }
+    }
+  },
+  {
+    "name": "Admin can create customer order vehicle",
+    "method": "POST",
+    "path": "/vehicles",
+    "payload": {
+      "plateNumber": "API-102112",
+      "vin": "VIN-API-20260509102112",
+      "vehicleType": "Quad",
+      "ownership": "Customer Order",
+      "ownerName": "API Test Customer Ltd",
+      "companyName": "API Test Customer Ltd",
+      "deliveryPersonName": "QA Delivery Person",
+      "contactNumber": "+230 5123 4567",
+      "email": "qa.customer@example.com",
+      "manufacturer": "CFMOTO",
+      "status": "Build in Progress",
+      "currentHourMeter": 0,
+      "checkInDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "expectedDeliveryDate": "2026-05-23T06:21:12.810265+00:00",
+      "transactionId": "08465add-b073-46e3-a94d-f8ef7fee0252",
+      "notes": "Vehicle created by API Test Bot from PO flow."
+    }
+  },
+  {
+    "name": "Store cannot create vehicle",
+    "method": "POST",
+    "path": "/vehicles",
+    "payload": {
+      "plateNumber": "DENY-102112",
+      "vin": "VIN-API-20260509102112",
+      "vehicleType": "Quad",
+      "ownership": "Customer Order",
+      "ownerName": "API Test Customer Ltd",
+      "companyName": "API Test Customer Ltd",
+      "deliveryPersonName": "QA Delivery Person",
+      "contactNumber": "+230 5123 4567",
+      "email": "qa.customer@example.com",
+      "manufacturer": "CFMOTO",
+      "status": "Build in Progress",
+      "currentHourMeter": 0,
+      "checkInDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "expectedDeliveryDate": "2026-05-23T06:21:12.810265+00:00",
+      "transactionId": "08465add-b073-46e3-a94d-f8ef7fee0252",
+      "notes": "Vehicle created by API Test Bot from PO flow."
+    }
+  },
+  {
+    "name": "Mechanic can update vehicle build info",
+    "method": "PATCH",
+    "path": "/vehicles/00040714-5f26-4bca-8ae8-217897c825a8",
+    "payload": {
+      "status": "Built and Testing",
+      "expectedDeliveryDate": "2026-05-19T06:21:12.810265+00:00",
+      "notes": "Build started and expected delivery updated by mechanic."
+    }
+  },
+  {
+    "name": "Store can create inventory item",
+    "method": "POST",
+    "path": "/inventory",
+    "payload": {
+      "sku": "API-PART-20260509102112",
+      "name": "API Test Part 20260509102112",
+      "category": "Testing Parts",
+      "barcode": "BAR20260509102112",
+      "currentStock": 3,
+      "reorderLevel": 5,
+      "costPrice": 100,
+      "sellingPrice": 150,
+      "supplierName": "API Supplier",
+      "supplierEmail": "supplier@example.com",
+      "location": "QA Rack"
+    }
+  },
+  {
+    "name": "Mechanic cannot create inventory item",
+    "method": "POST",
+    "path": "/inventory",
+    "payload": {
+      "sku": "NOPE-20260509102112",
+      "name": "API Test Part 20260509102112",
+      "category": "Testing Parts",
+      "barcode": "NOPEBAR20260509102112",
+      "currentStock": 3,
+      "reorderLevel": 5,
+      "costPrice": 100,
+      "sellingPrice": 150,
+      "supplierName": "API Supplier",
+      "supplierEmail": "supplier@example.com",
+      "location": "QA Rack"
+    }
+  },
+  {
+    "name": "Store can update inventory stock",
+    "method": "PATCH",
+    "path": "/inventory/7ece2c00-5878-4c13-a6ba-f1684f7c29a5",
+    "payload": {
+      "currentStock": 12,
+      "reorderLevel": 5
+    }
+  },
+  {
+    "name": "Mechanic can create assessment",
+    "method": "POST",
+    "path": "/assessments",
+    "payload": {
+      "ticketNo": "ASM-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "status": "OPEN",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ],
+      "photos": [
+        "/uploads/assessment-20260509102112.jpg"
+      ]
+    }
+  },
+  {
+    "name": "Store cannot create assessment",
+    "method": "POST",
+    "path": "/assessments",
+    "payload": {
+      "ticketNo": "ASM-DENY-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "status": "OPEN",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ],
+      "photos": [
+        "/uploads/assessment-20260509102112.jpg"
+      ]
+    }
+  },
+  {
+    "name": "Mechanic can reopen assessment with reason",
+    "method": "POST",
+    "path": "/assessments/62424fb0-4aa8-4e1c-ab1c-0ad063b4a945/reopen",
+    "payload": {
+      "reason": "Additional part requirement found during inspection."
+    }
+  },
+  {
+    "name": "Store can issue parts to assessment",
+    "method": "POST",
+    "path": "/assessments/62424fb0-4aa8-4e1c-ab1c-0ad063b4a945/issue-parts",
+    "payload": {
+      "parts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1,
+          "issuedBy": "Store Keeper"
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1,
+          "issuedBy": "Store Keeper"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Mechanic can create garage operation",
+    "method": "POST",
+    "path": "/garage-ops",
+    "payload": {
+      "processNo": "PRC-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "processType": "Build / Assembly",
+      "status": "In Progress",
+      "proceduresPerformed": "Started vehicle assembly and pre-delivery mechanical checks.",
+      "partsUsed": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        }
+      ],
+      "checkInDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "startDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "laborHours": 1.5,
+      "currentHourMeter": 0,
+      "nextServiceDueAtHours": 100,
+      "photos": [
+        "/uploads/garage-20260509102112.jpg"
+      ]
+    }
+  },
+  {
+    "name": "Store cannot create garage operation",
+    "method": "POST",
+    "path": "/garage-ops",
+    "payload": {
+      "processNo": "PRC-DENY-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "processType": "Build / Assembly",
+      "status": "In Progress",
+      "proceduresPerformed": "Started vehicle assembly and pre-delivery mechanical checks.",
+      "partsUsed": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        }
+      ],
+      "checkInDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "startDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "laborHours": 1.5,
+      "currentHourMeter": 0,
+      "nextServiceDueAtHours": 100,
+      "photos": [
+        "/uploads/garage-20260509102112.jpg"
+      ]
+    }
+  },
+  {
+    "name": "Mechanic can update garage operation invoice/payment",
+    "method": "PATCH",
+    "path": "/garage-ops/39e9b991-1f55-4b56-ace1-25ba6e1ef8c0",
+    "payload": {
+      "status": "Completed",
+      "endDateTime": "2026-05-09T06:21:13.767209+00:00",
+      "laborHours": "3.75",
+      "invoiceAttachmentUrl": "/uploads/service-invoice-20260509102112.pdf",
+      "paymentDone": true,
+      "proceduresPerformed": "Assembly completed, testing passed, invoice attached."
+    }
+  }
+]

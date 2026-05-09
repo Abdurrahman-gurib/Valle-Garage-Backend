@@ -1,0 +1,1343 @@
+[
+  {
+    "name": "Protected route without token should be rejected",
+    "method": "GET",
+    "path": "/vehicles",
+    "expected": "401",
+    "actual_status": 401,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "message": "Unauthorized",
+      "statusCode": 401
+    },
+    "error": null
+  },
+  {
+    "name": "Login as admin",
+    "method": "POST",
+    "path": "/auth/login",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "email": "admin@valle.com",
+      "password": "admin123",
+      "role": "admin"
+    },
+    "response_preview": {
+      "accessToken": "<JWT token returned>",
+      "user": {
+        "id": "68262848-7fb7-47a2-8f06-f369bc9c8d99",
+        "name": "Admin User",
+        "email": "admin@valle.com",
+        "role": "ADMIN",
+        "isActive": true,
+        "createdAt": "2026-05-09T06:19:15.188Z",
+        "updatedAt": "2026-05-09T06:19:15.188Z"
+      }
+    },
+    "error": null
+  },
+  {
+    "name": "Login as mechanic",
+    "method": "POST",
+    "path": "/auth/login",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "email": "mechanic@valle.com",
+      "password": "mech123",
+      "role": "mechanic"
+    },
+    "response_preview": {
+      "accessToken": "<JWT token returned>",
+      "user": {
+        "id": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+        "name": "Mechanic User",
+        "email": "mechanic@valle.com",
+        "role": "MECHANIC",
+        "isActive": true,
+        "createdAt": "2026-05-09T06:19:15.202Z",
+        "updatedAt": "2026-05-09T06:19:15.202Z"
+      }
+    },
+    "error": null
+  },
+  {
+    "name": "Login as store",
+    "method": "POST",
+    "path": "/auth/login",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "email": "store@valle.com",
+      "password": "store123",
+      "role": "store"
+    },
+    "response_preview": {
+      "accessToken": "<JWT token returned>",
+      "user": {
+        "id": "25a3d41f-d299-43ea-bc73-6deb1af92992",
+        "name": "Store Keeper User",
+        "email": "store@valle.com",
+        "role": "STORE_KEEPER",
+        "isActive": true,
+        "createdAt": "2026-05-09T06:19:15.204Z",
+        "updatedAt": "2026-05-09T06:19:15.204Z"
+      }
+    },
+    "error": null
+  },
+  {
+    "name": "Invalid password rejected",
+    "method": "POST",
+    "path": "/auth/login",
+    "expected": "401",
+    "actual_status": 401,
+    "passed": true,
+    "payload": {
+      "email": "admin@valle.com",
+      "password": "wrong",
+      "role": "admin"
+    },
+    "response_preview": {
+      "message": "Invalid login details",
+      "error": "Unauthorized",
+      "statusCode": 401
+    },
+    "error": null
+  },
+  {
+    "name": "Admin /auth/me",
+    "method": "GET",
+    "path": "/auth/me",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "id": "68262848-7fb7-47a2-8f06-f369bc9c8d99",
+      "name": "Admin User",
+      "email": "admin@valle.com",
+      "role": "ADMIN",
+      "isActive": true,
+      "createdAt": "2026-05-09T06:19:15.188Z",
+      "updatedAt": "2026-05-09T06:19:15.188Z"
+    },
+    "error": null
+  },
+  {
+    "name": "Mechanic /auth/me",
+    "method": "GET",
+    "path": "/auth/me",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "id": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+      "name": "Mechanic User",
+      "email": "mechanic@valle.com",
+      "role": "MECHANIC",
+      "isActive": true,
+      "createdAt": "2026-05-09T06:19:15.202Z",
+      "updatedAt": "2026-05-09T06:19:15.202Z"
+    },
+    "error": null
+  },
+  {
+    "name": "Store /auth/me",
+    "method": "GET",
+    "path": "/auth/me",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "id": "25a3d41f-d299-43ea-bc73-6deb1af92992",
+      "name": "Store Keeper User",
+      "email": "store@valle.com",
+      "role": "STORE_KEEPER",
+      "isActive": true,
+      "createdAt": "2026-05-09T06:19:15.204Z",
+      "updatedAt": "2026-05-09T06:19:15.204Z"
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can list users",
+    "method": "GET",
+    "path": "/users",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "68262848-7fb7-47a2-8f06-f369bc9c8d99",
+        "name": "Admin User",
+        "email": "admin@valle.com",
+        "role": "ADMIN",
+        "isActive": true,
+        "createdAt": "2026-05-09T06:19:15.188Z",
+        "updatedAt": "2026-05-09T06:19:15.188Z"
+      },
+      {
+        "id": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+        "name": "Mechanic User",
+        "email": "mechanic@valle.com",
+        "role": "MECHANIC",
+        "isActive": true,
+        "createdAt": "2026-05-09T06:19:15.202Z",
+        "updatedAt": "2026-05-09T06:19:15.202Z"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Mechanic cannot list users",
+    "method": "GET",
+    "path": "/users",
+    "expected": "403",
+    "actual_status": 403,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "message": "Forbidden resource",
+      "error": "Forbidden",
+      "statusCode": 403
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can create user",
+    "method": "POST",
+    "path": "/users",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "name": "Test Mechanic 20260509102112",
+      "email": "test.mechanic.20260509102112@valle.com",
+      "password": "Test12345",
+      "role": "mechanic",
+      "isActive": true
+    },
+    "response_preview": {
+      "id": "9803cdba-e0ca-49ad-b69e-cd87143d0770",
+      "name": "Test Mechanic 20260509102112",
+      "email": "test.mechanic.20260509102112@valle.com",
+      "role": "MECHANIC",
+      "isActive": true
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can read created user",
+    "method": "GET",
+    "path": "/users/9803cdba-e0ca-49ad-b69e-cd87143d0770",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "id": "9803cdba-e0ca-49ad-b69e-cd87143d0770",
+      "name": "Test Mechanic 20260509102112",
+      "email": "test.mechanic.20260509102112@valle.com",
+      "role": "MECHANIC",
+      "isActive": true,
+      "createdAt": "2026-05-09T06:21:13.422Z",
+      "updatedAt": "2026-05-09T06:21:13.422Z"
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can update created user",
+    "method": "PATCH",
+    "path": "/users/9803cdba-e0ca-49ad-b69e-cd87143d0770",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": {
+      "isActive": true,
+      "name": "Updated Mechanic 20260509102112"
+    },
+    "response_preview": {
+      "id": "9803cdba-e0ca-49ad-b69e-cd87143d0770",
+      "name": "Updated Mechanic 20260509102112",
+      "email": "test.mechanic.20260509102112@valle.com",
+      "role": "MECHANIC",
+      "isActive": true
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can create transaction / PO",
+    "method": "POST",
+    "path": "/transactions",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "transactionNo": "TXN-API-20260509102112",
+      "type": "Vehicle Order",
+      "status": "In Progress",
+      "title": "API Customer Quad Build 20260509102112",
+      "customerName": "API Test Customer Ltd",
+      "poNumber": "PO-API-20260509102112",
+      "poAttachmentUrl": "/uploads/po-20260509102112.pdf",
+      "amount": 485000,
+      "startDate": "2026-05-09T06:21:12.810265+00:00",
+      "expectedDeliveryDate": "2026-05-23T06:21:12.810265+00:00",
+      "notes": "Created by API Test Bot."
+    },
+    "response_preview": {
+      "id": "08465add-b073-46e3-a94d-f8ef7fee0252",
+      "transactionNo": "TXN-API-20260509102112",
+      "type": "VEHICLE_ORDER",
+      "status": "IN_PROGRESS",
+      "title": "API Customer Quad Build 20260509102112",
+      "supplierName": null,
+      "supplierEmail": null,
+      "customerName": "API Test Customer Ltd"
+    },
+    "error": null
+  },
+  {
+    "name": "Mechanic cannot create transaction",
+    "method": "POST",
+    "path": "/transactions",
+    "expected": "403",
+    "actual_status": 403,
+    "passed": true,
+    "payload": {
+      "transactionNo": "TXN-DENY-20260509102112",
+      "type": "Vehicle Order",
+      "status": "In Progress",
+      "title": "API Customer Quad Build 20260509102112",
+      "customerName": "API Test Customer Ltd",
+      "poNumber": "PO-API-20260509102112",
+      "poAttachmentUrl": "/uploads/po-20260509102112.pdf",
+      "amount": 485000,
+      "startDate": "2026-05-09T06:21:12.810265+00:00",
+      "expectedDeliveryDate": "2026-05-23T06:21:12.810265+00:00",
+      "notes": "Created by API Test Bot."
+    },
+    "response_preview": {
+      "message": "Forbidden resource",
+      "error": "Forbidden",
+      "statusCode": 403
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can list transactions",
+    "method": "GET",
+    "path": "/transactions",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "08465add-b073-46e3-a94d-f8ef7fee0252",
+        "transactionNo": "TXN-API-20260509102112",
+        "type": "VEHICLE_ORDER",
+        "status": "IN_PROGRESS",
+        "title": "API Customer Quad Build 20260509102112",
+        "supplierName": null,
+        "supplierEmail": null,
+        "customerName": "API Test Customer Ltd"
+      },
+      {
+        "id": "7af22146-adf4-4ff3-945a-2fffc0d50615",
+        "transactionNo": "TXN-0001",
+        "type": "VEHICLE_ORDER",
+        "status": "IN_PROGRESS",
+        "title": "Customer Order - New Quad Build",
+        "supplierName": null,
+        "supplierEmail": null,
+        "customerName": "External Adventure Client"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Admin can read transaction",
+    "method": "GET",
+    "path": "/transactions/08465add-b073-46e3-a94d-f8ef7fee0252",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "id": "08465add-b073-46e3-a94d-f8ef7fee0252",
+      "transactionNo": "TXN-API-20260509102112",
+      "type": "VEHICLE_ORDER",
+      "status": "IN_PROGRESS",
+      "title": "API Customer Quad Build 20260509102112",
+      "supplierName": null,
+      "supplierEmail": null,
+      "customerName": "API Test Customer Ltd"
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can update transaction with invoice/payment status",
+    "method": "PATCH",
+    "path": "/transactions/08465add-b073-46e3-a94d-f8ef7fee0252",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": {
+      "status": "Paid",
+      "invoiceAttachmentUrl": "/uploads/invoice-20260509102112.pdf",
+      "notes": "Invoice attached and payment marked paid by test bot."
+    },
+    "response_preview": {
+      "id": "08465add-b073-46e3-a94d-f8ef7fee0252",
+      "transactionNo": "TXN-API-20260509102112",
+      "type": "VEHICLE_ORDER",
+      "status": "PAID",
+      "title": "API Customer Quad Build 20260509102112",
+      "supplierName": null,
+      "supplierEmail": null,
+      "customerName": "API Test Customer Ltd"
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can complete transaction with GRN",
+    "method": "POST",
+    "path": "/transactions/08465add-b073-46e3-a94d-f8ef7fee0252/complete-with-grn",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "grnAttachmentUrl": "/uploads/grn-20260509102112.pdf",
+      "grnData": {
+        "receivedBy": "API Tester",
+        "condition": "Good",
+        "receivedDate": "2026-05-09"
+      }
+    },
+    "response_preview": {
+      "id": "08465add-b073-46e3-a94d-f8ef7fee0252",
+      "transactionNo": "TXN-API-20260509102112",
+      "type": "VEHICLE_ORDER",
+      "status": "COMPLETED",
+      "title": "API Customer Quad Build 20260509102112",
+      "supplierName": null,
+      "supplierEmail": null,
+      "customerName": "API Test Customer Ltd"
+    },
+    "error": null
+  },
+  {
+    "name": "Admin can create customer order vehicle",
+    "method": "POST",
+    "path": "/vehicles",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "plateNumber": "API-102112",
+      "vin": "VIN-API-20260509102112",
+      "vehicleType": "Quad",
+      "ownership": "Customer Order",
+      "ownerName": "API Test Customer Ltd",
+      "companyName": "API Test Customer Ltd",
+      "deliveryPersonName": "QA Delivery Person",
+      "contactNumber": "+230 5123 4567",
+      "email": "qa.customer@example.com",
+      "manufacturer": "CFMOTO",
+      "status": "Build in Progress",
+      "currentHourMeter": 0,
+      "checkInDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "expectedDeliveryDate": "2026-05-23T06:21:12.810265+00:00",
+      "transactionId": "08465add-b073-46e3-a94d-f8ef7fee0252",
+      "notes": "Vehicle created by API Test Bot from PO flow."
+    },
+    "response_preview": {
+      "id": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "plateNumber": "API-102112",
+      "vin": "VIN-API-20260509102112",
+      "vehicleType": "Quad",
+      "ownership": "CUSTOMER_ORDER",
+      "ownerName": "API Test Customer Ltd",
+      "companyName": "API Test Customer Ltd",
+      "deliveryPersonName": "QA Delivery Person"
+    },
+    "error": null
+  },
+  {
+    "name": "Store cannot create vehicle",
+    "method": "POST",
+    "path": "/vehicles",
+    "expected": "403",
+    "actual_status": 403,
+    "passed": true,
+    "payload": {
+      "plateNumber": "DENY-102112",
+      "vin": "VIN-API-20260509102112",
+      "vehicleType": "Quad",
+      "ownership": "Customer Order",
+      "ownerName": "API Test Customer Ltd",
+      "companyName": "API Test Customer Ltd",
+      "deliveryPersonName": "QA Delivery Person",
+      "contactNumber": "+230 5123 4567",
+      "email": "qa.customer@example.com",
+      "manufacturer": "CFMOTO",
+      "status": "Build in Progress",
+      "currentHourMeter": 0,
+      "checkInDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "expectedDeliveryDate": "2026-05-23T06:21:12.810265+00:00",
+      "transactionId": "08465add-b073-46e3-a94d-f8ef7fee0252",
+      "notes": "Vehicle created by API Test Bot from PO flow."
+    },
+    "response_preview": {
+      "message": "Forbidden resource",
+      "error": "Forbidden",
+      "statusCode": 403
+    },
+    "error": null
+  },
+  {
+    "name": "All roles can list vehicles - admin",
+    "method": "GET",
+    "path": "/vehicles",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "00040714-5f26-4bca-8ae8-217897c825a8",
+        "plateNumber": "API-102112",
+        "vin": "VIN-API-20260509102112",
+        "vehicleType": "Quad",
+        "ownership": "CUSTOMER_ORDER",
+        "ownerName": "API Test Customer Ltd",
+        "companyName": "API Test Customer Ltd",
+        "deliveryPersonName": "QA Delivery Person"
+      },
+      {
+        "id": "b3d6bc73-4ff6-4865-8dbe-2cfbff792470",
+        "plateNumber": "BUILD-3001",
+        "vin": "BUILD-VIN-3001",
+        "vehicleType": "Quad",
+        "ownership": "CUSTOMER_ORDER",
+        "ownerName": "External Adventure Client",
+        "companyName": "Adventure Client Ltd",
+        "deliveryPersonName": "Kevin Delivery"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "All roles can list vehicles - mechanic",
+    "method": "GET",
+    "path": "/vehicles",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "00040714-5f26-4bca-8ae8-217897c825a8",
+        "plateNumber": "API-102112",
+        "vin": "VIN-API-20260509102112",
+        "vehicleType": "Quad",
+        "ownership": "CUSTOMER_ORDER",
+        "ownerName": "API Test Customer Ltd",
+        "companyName": "API Test Customer Ltd",
+        "deliveryPersonName": "QA Delivery Person"
+      },
+      {
+        "id": "b3d6bc73-4ff6-4865-8dbe-2cfbff792470",
+        "plateNumber": "BUILD-3001",
+        "vin": "BUILD-VIN-3001",
+        "vehicleType": "Quad",
+        "ownership": "CUSTOMER_ORDER",
+        "ownerName": "External Adventure Client",
+        "companyName": "Adventure Client Ltd",
+        "deliveryPersonName": "Kevin Delivery"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "All roles can list vehicles - store",
+    "method": "GET",
+    "path": "/vehicles",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "00040714-5f26-4bca-8ae8-217897c825a8",
+        "plateNumber": "API-102112",
+        "vin": "VIN-API-20260509102112",
+        "vehicleType": "Quad",
+        "ownership": "CUSTOMER_ORDER",
+        "ownerName": "API Test Customer Ltd",
+        "companyName": "API Test Customer Ltd",
+        "deliveryPersonName": "QA Delivery Person"
+      },
+      {
+        "id": "b3d6bc73-4ff6-4865-8dbe-2cfbff792470",
+        "plateNumber": "BUILD-3001",
+        "vin": "BUILD-VIN-3001",
+        "vehicleType": "Quad",
+        "ownership": "CUSTOMER_ORDER",
+        "ownerName": "External Adventure Client",
+        "companyName": "Adventure Client Ltd",
+        "deliveryPersonName": "Kevin Delivery"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Mechanic can update vehicle build info",
+    "method": "PATCH",
+    "path": "/vehicles/00040714-5f26-4bca-8ae8-217897c825a8",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": {
+      "status": "Built and Testing",
+      "expectedDeliveryDate": "2026-05-19T06:21:12.810265+00:00",
+      "notes": "Build started and expected delivery updated by mechanic."
+    },
+    "response_preview": {
+      "id": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "plateNumber": "API-102112",
+      "vin": "VIN-API-20260509102112",
+      "vehicleType": "Quad",
+      "ownership": "CUSTOMER_ORDER",
+      "ownerName": "API Test Customer Ltd",
+      "companyName": "API Test Customer Ltd",
+      "deliveryPersonName": "QA Delivery Person"
+    },
+    "error": null
+  },
+  {
+    "name": "Store can create inventory item",
+    "method": "POST",
+    "path": "/inventory",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "sku": "API-PART-20260509102112",
+      "name": "API Test Part 20260509102112",
+      "category": "Testing Parts",
+      "barcode": "BAR20260509102112",
+      "currentStock": 3,
+      "reorderLevel": 5,
+      "costPrice": 100,
+      "sellingPrice": 150,
+      "supplierName": "API Supplier",
+      "supplierEmail": "supplier@example.com",
+      "location": "QA Rack"
+    },
+    "response_preview": {
+      "id": "7ece2c00-5878-4c13-a6ba-f1684f7c29a5",
+      "sku": "API-PART-20260509102112",
+      "name": "API Test Part 20260509102112",
+      "category": "Testing Parts",
+      "barcode": "BAR20260509102112",
+      "currentStock": 3,
+      "reorderLevel": 5,
+      "costPrice": "100"
+    },
+    "error": null
+  },
+  {
+    "name": "Mechanic cannot create inventory item",
+    "method": "POST",
+    "path": "/inventory",
+    "expected": "403",
+    "actual_status": 403,
+    "passed": true,
+    "payload": {
+      "sku": "NOPE-20260509102112",
+      "name": "API Test Part 20260509102112",
+      "category": "Testing Parts",
+      "barcode": "NOPEBAR20260509102112",
+      "currentStock": 3,
+      "reorderLevel": 5,
+      "costPrice": 100,
+      "sellingPrice": 150,
+      "supplierName": "API Supplier",
+      "supplierEmail": "supplier@example.com",
+      "location": "QA Rack"
+    },
+    "response_preview": {
+      "message": "Forbidden resource",
+      "error": "Forbidden",
+      "statusCode": 403
+    },
+    "error": null
+  },
+  {
+    "name": "Inventory list works",
+    "method": "GET",
+    "path": "/inventory",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "7ece2c00-5878-4c13-a6ba-f1684f7c29a5",
+        "sku": "API-PART-20260509102112",
+        "name": "API Test Part 20260509102112",
+        "category": "Testing Parts",
+        "barcode": "BAR20260509102112",
+        "currentStock": 3,
+        "reorderLevel": 5,
+        "costPrice": "100"
+      },
+      {
+        "id": "2d647888-b219-410a-b44e-78751b946d8e",
+        "sku": "CF-BRK-110",
+        "name": "Brake Pad Set",
+        "category": "Brake System",
+        "barcode": "889100110",
+        "currentStock": 34,
+        "reorderLevel": 12,
+        "costPrice": "850"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Low stock list works",
+    "method": "GET",
+    "path": "/inventory/low-stock",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "7ece2c00-5878-4c13-a6ba-f1684f7c29a5",
+        "sku": "API-PART-20260509102112",
+        "name": "API Test Part 20260509102112",
+        "category": "Testing Parts",
+        "barcode": "BAR20260509102112",
+        "currentStock": 3,
+        "reorderLevel": 5,
+        "costPrice": "100"
+      },
+      {
+        "id": "05fe03b7-f207-4551-a64a-68818d0757fb",
+        "sku": "CF-BLT-501",
+        "name": "Drive Belt",
+        "category": "Transmission",
+        "barcode": "889105501",
+        "currentStock": 4,
+        "reorderLevel": 8,
+        "costPrice": "2600"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Store can update inventory stock",
+    "method": "PATCH",
+    "path": "/inventory/7ece2c00-5878-4c13-a6ba-f1684f7c29a5",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": {
+      "currentStock": 12,
+      "reorderLevel": 5
+    },
+    "response_preview": {
+      "id": "7ece2c00-5878-4c13-a6ba-f1684f7c29a5",
+      "sku": "API-PART-20260509102112",
+      "name": "API Test Part 20260509102112",
+      "category": "Testing Parts",
+      "barcode": "BAR20260509102112",
+      "currentStock": 12,
+      "reorderLevel": 5,
+      "costPrice": "100"
+    },
+    "error": null
+  },
+  {
+    "name": "Mechanic can create assessment",
+    "method": "POST",
+    "path": "/assessments",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "ticketNo": "ASM-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "status": "OPEN",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ],
+      "photos": [
+        "/uploads/assessment-20260509102112.jpg"
+      ]
+    },
+    "response_preview": {
+      "id": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "ticketNo": "ASM-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "mechanicId": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+      "status": "OPEN",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "name": "Store cannot create assessment",
+    "method": "POST",
+    "path": "/assessments",
+    "expected": "403",
+    "actual_status": 403,
+    "passed": true,
+    "payload": {
+      "ticketNo": "ASM-DENY-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "status": "OPEN",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ],
+      "photos": [
+        "/uploads/assessment-20260509102112.jpg"
+      ]
+    },
+    "response_preview": {
+      "message": "Forbidden resource",
+      "error": "Forbidden",
+      "statusCode": 403
+    },
+    "error": null
+  },
+  {
+    "name": "Assessment list works",
+    "method": "GET",
+    "path": "/assessments",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+        "ticketNo": "ASM-API-20260509102112",
+        "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+        "mechanicId": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+        "status": "OPEN",
+        "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+        "conclusion": "Request parts before final testing.",
+        "requiredParts": [
+          {
+            "partName": "Side Mirror Set",
+            "quantity": 1
+          },
+          {
+            "partName": "Brake Adjustment Kit",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "cb43320e-5e7f-4382-a228-2a0b7a4aecde",
+        "ticketNo": "ASM-1001",
+        "vehicleId": "bb4995b5-4778-4760-a3eb-7d4d7bb3e546",
+        "mechanicId": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+        "status": "READY_FOR_PARTS",
+        "issuesDetected": "Brake noise and weak stopping response.",
+        "conclusion": "Replace front brake pads and inspect brake fluid.",
+        "requiredParts": [
+          {
+            "partName": "Brake Pad Set",
+            "quantity": 2
+          }
+        ]
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Assessment detail works",
+    "method": "GET",
+    "path": "/assessments/62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "id": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "ticketNo": "ASM-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "mechanicId": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+      "status": "OPEN",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "name": "Mechanic can reopen assessment with reason",
+    "method": "POST",
+    "path": "/assessments/62424fb0-4aa8-4e1c-ab1c-0ad063b4a945/reopen",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "reason": "Additional part requirement found during inspection."
+    },
+    "response_preview": {
+      "id": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "ticketNo": "ASM-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "mechanicId": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+      "status": "REOPENED",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "name": "Store can issue parts to assessment",
+    "method": "POST",
+    "path": "/assessments/62424fb0-4aa8-4e1c-ab1c-0ad063b4a945/issue-parts",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "parts": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1,
+          "issuedBy": "Store Keeper"
+        },
+        {
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1,
+          "issuedBy": "Store Keeper"
+        }
+      ]
+    },
+    "response_preview": {
+      "id": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "ticketNo": "ASM-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "mechanicId": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+      "status": "PARTS_ISSUED",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "issuedBy": "Store Keeper",
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "issuedBy": "Store Keeper",
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "name": "Mechanic can create garage operation",
+    "method": "POST",
+    "path": "/garage-ops",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": {
+      "processNo": "PRC-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "processType": "Build / Assembly",
+      "status": "In Progress",
+      "proceduresPerformed": "Started vehicle assembly and pre-delivery mechanical checks.",
+      "partsUsed": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        }
+      ],
+      "checkInDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "startDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "laborHours": 1.5,
+      "currentHourMeter": 0,
+      "nextServiceDueAtHours": 100,
+      "photos": [
+        "/uploads/garage-20260509102112.jpg"
+      ]
+    },
+    "response_preview": {
+      "id": "39e9b991-1f55-4b56-ace1-25ba6e1ef8c0",
+      "processNo": "PRC-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "processType": "ASSEMBLY",
+      "status": "IN_PROGRESS",
+      "proceduresPerformed": "Started vehicle assembly and pre-delivery mechanical checks.",
+      "partsUsed": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "name": "Store cannot create garage operation",
+    "method": "POST",
+    "path": "/garage-ops",
+    "expected": "403",
+    "actual_status": 403,
+    "passed": true,
+    "payload": {
+      "processNo": "PRC-DENY-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "processType": "Build / Assembly",
+      "status": "In Progress",
+      "proceduresPerformed": "Started vehicle assembly and pre-delivery mechanical checks.",
+      "partsUsed": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        }
+      ],
+      "checkInDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "startDateTime": "2026-05-09T06:21:12.810265+00:00",
+      "laborHours": 1.5,
+      "currentHourMeter": 0,
+      "nextServiceDueAtHours": 100,
+      "photos": [
+        "/uploads/garage-20260509102112.jpg"
+      ]
+    },
+    "response_preview": {
+      "message": "Forbidden resource",
+      "error": "Forbidden",
+      "statusCode": 403
+    },
+    "error": null
+  },
+  {
+    "name": "Garage operations list works",
+    "method": "GET",
+    "path": "/garage-ops",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "39e9b991-1f55-4b56-ace1-25ba6e1ef8c0",
+        "processNo": "PRC-API-20260509102112",
+        "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+        "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+        "processType": "ASSEMBLY",
+        "status": "IN_PROGRESS",
+        "proceduresPerformed": "Started vehicle assembly and pre-delivery mechanical checks.",
+        "partsUsed": [
+          {
+            "partName": "Side Mirror Set",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "f6034dc9-9cb7-4ea9-bfc3-00e2462c0bb4",
+        "processNo": "PRC-502",
+        "vehicleId": "b3d6bc73-4ff6-4865-8dbe-2cfbff792470",
+        "assessmentId": null,
+        "processType": "ASSEMBLY",
+        "status": "PENDING",
+        "proceduresPerformed": "Customer vehicle build request waiting for assembly.",
+        "partsUsed": []
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Garage operation detail works",
+    "method": "GET",
+    "path": "/garage-ops/39e9b991-1f55-4b56-ace1-25ba6e1ef8c0",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "id": "39e9b991-1f55-4b56-ace1-25ba6e1ef8c0",
+      "processNo": "PRC-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "processType": "ASSEMBLY",
+      "status": "IN_PROGRESS",
+      "proceduresPerformed": "Started vehicle assembly and pre-delivery mechanical checks.",
+      "partsUsed": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "name": "Mechanic can update garage operation invoice/payment",
+    "method": "PATCH",
+    "path": "/garage-ops/39e9b991-1f55-4b56-ace1-25ba6e1ef8c0",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": {
+      "status": "Completed",
+      "endDateTime": "2026-05-09T06:21:13.767209+00:00",
+      "laborHours": "3.75",
+      "invoiceAttachmentUrl": "/uploads/service-invoice-20260509102112.pdf",
+      "paymentDone": true,
+      "proceduresPerformed": "Assembly completed, testing passed, invoice attached."
+    },
+    "response_preview": {
+      "id": "39e9b991-1f55-4b56-ace1-25ba6e1ef8c0",
+      "processNo": "PRC-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "processType": "ASSEMBLY",
+      "status": "COMPLETED",
+      "proceduresPerformed": "Assembly completed, testing passed, invoice attached.",
+      "partsUsed": [
+        {
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "name": "Store can mark assessment complete",
+    "method": "POST",
+    "path": "/assessments/62424fb0-4aa8-4e1c-ab1c-0ad063b4a945/complete",
+    "expected": "201",
+    "actual_status": 201,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "id": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+      "ticketNo": "ASM-API-20260509102112",
+      "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+      "mechanicId": "eccc50df-fe8b-40e1-b957-b522bfe9f366",
+      "status": "COMPLETED",
+      "issuesDetected": "Assembly inspection found missing side mirror and brake adjustment requirement.",
+      "conclusion": "Request parts before final testing.",
+      "requiredParts": [
+        {
+          "issuedBy": "Store Keeper",
+          "partName": "Side Mirror Set",
+          "quantity": 1
+        },
+        {
+          "issuedBy": "Store Keeper",
+          "partName": "Brake Adjustment Kit",
+          "quantity": 1
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "name": "Dashboard report works",
+    "method": "GET",
+    "path": "/reports/dashboard",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": {
+      "vehicles": 3,
+      "inGarage": 3,
+      "lowStock": 2,
+      "assessments": 2,
+      "transactions": 2
+    },
+    "error": null
+  },
+  {
+    "name": "Maintenance history report works",
+    "method": "GET",
+    "path": "/reports/maintenance-history",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "39e9b991-1f55-4b56-ace1-25ba6e1ef8c0",
+        "processNo": "PRC-API-20260509102112",
+        "vehicleId": "00040714-5f26-4bca-8ae8-217897c825a8",
+        "assessmentId": "62424fb0-4aa8-4e1c-ab1c-0ad063b4a945",
+        "processType": "ASSEMBLY",
+        "status": "COMPLETED",
+        "proceduresPerformed": "Assembly completed, testing passed, invoice attached.",
+        "partsUsed": [
+          {
+            "partName": "Side Mirror Set",
+            "quantity": 1
+          }
+        ]
+      },
+      {
+        "id": "f6034dc9-9cb7-4ea9-bfc3-00e2462c0bb4",
+        "processNo": "PRC-502",
+        "vehicleId": "b3d6bc73-4ff6-4865-8dbe-2cfbff792470",
+        "assessmentId": null,
+        "processType": "ASSEMBLY",
+        "status": "PENDING",
+        "proceduresPerformed": "Customer vehicle build request waiting for assembly.",
+        "partsUsed": []
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Admin notifications work",
+    "method": "GET",
+    "path": "/notifications?role=ADMIN",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "ef11b121-2bf1-4115-ac78-d3460737fa9b",
+        "title": "Transaction Update",
+        "message": "Transaction TXN-0001 is currently in progress.",
+        "role": "ADMIN",
+        "isRead": false,
+        "createdAt": "2026-05-09T06:19:15.240Z"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Mechanic notifications work",
+    "method": "GET",
+    "path": "/notifications?role=MECHANIC",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "5f25cf66-e832-4ca1-82a2-1debd37417a2",
+        "title": "Garage Work Assigned",
+        "message": "Garage operation PRC-501 is assigned to you.",
+        "role": "MECHANIC",
+        "isRead": false,
+        "createdAt": "2026-05-09T06:19:15.240Z"
+      },
+      {
+        "id": "9e4aef05-bd8e-4570-8957-b6b800ab8a7f",
+        "title": "Vehicle Build Request",
+        "message": "Customer vehicle BUILD-3001 is ready for assembly workflow.",
+        "role": "MECHANIC",
+        "isRead": false,
+        "createdAt": "2026-05-09T06:19:15.240Z"
+      }
+    ],
+    "error": null
+  },
+  {
+    "name": "Store notifications work",
+    "method": "GET",
+    "path": "/notifications?role=STORE_KEEPER",
+    "expected": "200",
+    "actual_status": 200,
+    "passed": true,
+    "payload": null,
+    "response_preview": [
+      {
+        "id": "30ac3033-cb99-4d73-8649-67739bd071a5",
+        "title": "Low Stock Alert",
+        "message": "Drive Belt stock is below reorder level.",
+        "role": "STORE_KEEPER",
+        "isRead": false,
+        "createdAt": "2026-05-09T06:19:15.240Z"
+      },
+      {
+        "id": "47235808-13db-4a88-b3c9-f821f8b9e763",
+        "title": "Parts Required",
+        "message": "Assessment ASM-1001 requires parts issuance.",
+        "role": "STORE_KEEPER",
+        "isRead": false,
+        "createdAt": "2026-05-09T06:19:15.240Z"
+      }
+    ],
+    "error": null
+  }
+]
