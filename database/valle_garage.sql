@@ -1,329 +1,467 @@
 
 -- ============================================================
--- Vallé GMS PostgreSQL Database Setup
--- Garage & Spare Parts Management System
--- Compatible with NestJS + Prisma backend
+-- Vallé GMS Demo Data Seed
+-- Database: valle_garage
+-- Purpose: Add visible demo records for every table so frontend/backend APIs
+--          can display data and confirm inserts are stored in PostgreSQL.
 -- ============================================================
 
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+-- IMPORTANT:
+-- Run this after your schema/tables already exist.
 
-DROP TABLE IF EXISTS "Notification" CASCADE;
-DROP TABLE IF EXISTS "GarageOperation" CASCADE;
-DROP TABLE IF EXISTS "Assessment" CASCADE;
-DROP TABLE IF EXISTS "InventoryItem" CASCADE;
-DROP TABLE IF EXISTS "Vehicle" CASCADE;
-DROP TABLE IF EXISTS "Transaction" CASCADE;
-DROP TABLE IF EXISTS "User" CASCADE;
+-- Optional cleanup of previous demo seed data only
+DELETE FROM "Notification" WHERE "id" LIKE 'demo-%';
+DELETE FROM "GarageOperation" WHERE "id" LIKE 'demo-%';
+DELETE FROM "Assessment" WHERE "id" LIKE 'demo-%';
+DELETE FROM "InventoryItem" WHERE "id" LIKE 'demo-%';
+DELETE FROM "Vehicle" WHERE "id" LIKE 'demo-%';
+DELETE FROM "Transaction" WHERE "id" LIKE 'demo-%';
+DELETE FROM "User" WHERE "id" LIKE 'demo-%';
 
-DROP TYPE IF EXISTS "Role" CASCADE;
-DROP TYPE IF EXISTS "VehicleStatus" CASCADE;
-DROP TYPE IF EXISTS "VehicleOwnership" CASCADE;
-DROP TYPE IF EXISTS "AssessmentStatus" CASCADE;
-DROP TYPE IF EXISTS "GarageProcessType" CASCADE;
-DROP TYPE IF EXISTS "GarageStatus" CASCADE;
-DROP TYPE IF EXISTS "TransactionType" CASCADE;
-DROP TYPE IF EXISTS "TransactionStatus" CASCADE;
+-- ============================================================
+-- USERS
+-- Password hashes are for demo passwords:
+-- admin123, mech123, store123
+-- ============================================================
 
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'MECHANIC', 'STORE_KEEPER');
-
-CREATE TYPE "VehicleStatus" AS ENUM (
-  'ACTIVE',
-  'UNDER_REPAIR',
-  'OUT_OF_SERVICE',
-  'BUILD_IN_PROGRESS',
-  'BUILT_TESTING',
-  'DELIVERED'
-);
-
-CREATE TYPE "VehicleOwnership" AS ENUM (
-  'INTERNAL',
-  'EXTERNAL',
-  'CUSTOMER_ORDER'
-);
-
-CREATE TYPE "AssessmentStatus" AS ENUM (
-  'OPEN',
-  'IN_PROGRESS',
-  'READY_FOR_PARTS',
-  'PARTS_ISSUED',
-  'COMPLETED',
-  'REOPENED'
-);
-
-CREATE TYPE "GarageProcessType" AS ENUM (
-  'REPAIR',
-  'MAINTENANCE',
-  'SERVICING',
-  'ASSEMBLY',
-  'TESTING'
-);
-
-CREATE TYPE "GarageStatus" AS ENUM (
-  'PENDING',
-  'IN_PROGRESS',
-  'COMPLETED',
-  'CANCELLED'
-);
-
-CREATE TYPE "TransactionType" AS ENUM (
-  'PART_PURCHASE',
-  'VEHICLE_ORDER',
-  'SERVICE_INVOICE'
-);
-
-CREATE TYPE "TransactionStatus" AS ENUM (
-  'PENDING',
-  'IN_PROGRESS',
-  'COMPLETED',
-  'PAID',
-  'CANCELLED'
-);
-
-CREATE TABLE "User" (
-  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
-  "name" TEXT NOT NULL,
-  "email" TEXT NOT NULL UNIQUE,
-  "passwordHash" TEXT NOT NULL,
-  "role" "Role" NOT NULL,
-  "isActive" BOOLEAN NOT NULL DEFAULT TRUE,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE "Transaction" (
-  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
-  "transactionNo" TEXT NOT NULL UNIQUE,
-  "type" "TransactionType" NOT NULL,
-  "status" "TransactionStatus" NOT NULL DEFAULT 'PENDING',
-  "title" TEXT NOT NULL,
-  "supplierName" TEXT,
-  "supplierEmail" TEXT,
-  "customerName" TEXT,
-  "startDate" TIMESTAMP(3),
-  "expectedDeliveryDate" TIMESTAMP(3),
-  "poNumber" TEXT,
-  "poAttachmentUrl" TEXT,
-  "invoiceAttachmentUrl" TEXT,
-  "grnAttachmentUrl" TEXT,
-  "grnData" JSONB,
-  "amount" DECIMAL(12,2),
-  "notes" TEXT,
-  "createdById" TEXT,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT "Transaction_createdById_fkey"
-    FOREIGN KEY ("createdById") REFERENCES "User"("id")
-    ON DELETE SET NULL ON UPDATE CASCADE
-);
-
-CREATE TABLE "Vehicle" (
-  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
-  "plateNumber" TEXT NOT NULL UNIQUE,
-  "vin" TEXT,
-  "vehicleType" TEXT NOT NULL,
-  "ownership" "VehicleOwnership" NOT NULL DEFAULT 'INTERNAL',
-  "ownerName" TEXT,
-  "companyName" TEXT,
-  "deliveryPersonName" TEXT,
-  "contactNumber" TEXT,
-  "email" TEXT,
-  "manufacturer" TEXT,
-  "status" "VehicleStatus" NOT NULL DEFAULT 'ACTIVE',
-  "currentHourMeter" INTEGER NOT NULL DEFAULT 0,
-  "checkInDateTime" TIMESTAMP(3),
-  "expectedDeliveryDate" TIMESTAMP(3),
-  "notes" TEXT,
-  "createdById" TEXT,
-  "transactionId" TEXT,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT "Vehicle_createdById_fkey"
-    FOREIGN KEY ("createdById") REFERENCES "User"("id")
-    ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT "Vehicle_transactionId_fkey"
-    FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id")
-    ON DELETE SET NULL ON UPDATE CASCADE
-);
-
-CREATE TABLE "Assessment" (
-  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
-  "ticketNo" TEXT NOT NULL UNIQUE,
-  "vehicleId" TEXT NOT NULL,
-  "mechanicId" TEXT,
-  "status" "AssessmentStatus" NOT NULL DEFAULT 'OPEN',
-  "issuesDetected" TEXT NOT NULL,
-  "conclusion" TEXT,
-  "requiredParts" JSONB,
-  "reopenReason" TEXT,
-  "reopenedById" TEXT,
-  "reopenedAt" TIMESTAMP(3),
-  "photos" JSONB,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT "Assessment_vehicleId_fkey"
-    FOREIGN KEY ("vehicleId") REFERENCES "Vehicle"("id")
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "Assessment_mechanicId_fkey"
-    FOREIGN KEY ("mechanicId") REFERENCES "User"("id")
-    ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT "Assessment_reopenedById_fkey"
-    FOREIGN KEY ("reopenedById") REFERENCES "User"("id")
-    ON DELETE SET NULL ON UPDATE CASCADE
-);
-
-CREATE TABLE "InventoryItem" (
-  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
-  "sku" TEXT NOT NULL UNIQUE,
-  "name" TEXT NOT NULL,
-  "category" TEXT,
-  "barcode" TEXT UNIQUE,
-  "currentStock" INTEGER NOT NULL DEFAULT 0,
-  "reorderLevel" INTEGER NOT NULL DEFAULT 0,
-  "costPrice" DECIMAL(12,2),
-  "sellingPrice" DECIMAL(12,2),
-  "supplierName" TEXT,
-  "supplierEmail" TEXT,
-  "location" TEXT,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE "GarageOperation" (
-  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
-  "processNo" TEXT NOT NULL UNIQUE,
-  "vehicleId" TEXT NOT NULL,
-  "assessmentId" TEXT,
-  "processType" "GarageProcessType" NOT NULL,
-  "status" "GarageStatus" NOT NULL DEFAULT 'PENDING',
-  "proceduresPerformed" TEXT,
-  "partsUsed" JSONB,
-  "mechanicId" TEXT,
-  "checkInDateTime" TIMESTAMP(3),
-  "startDateTime" TIMESTAMP(3),
-  "endDateTime" TIMESTAMP(3),
-  "laborHours" DECIMAL(8,2),
-  "currentHourMeter" INTEGER,
-  "nextServiceDueAtHours" INTEGER,
-  "invoiceAttachmentUrl" TEXT,
-  "paymentDone" BOOLEAN NOT NULL DEFAULT FALSE,
-  "photos" JSONB,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT "GarageOperation_vehicleId_fkey"
-    FOREIGN KEY ("vehicleId") REFERENCES "Vehicle"("id")
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "GarageOperation_assessmentId_fkey"
-    FOREIGN KEY ("assessmentId") REFERENCES "Assessment"("id")
-    ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT "GarageOperation_mechanicId_fkey"
-    FOREIGN KEY ("mechanicId") REFERENCES "User"("id")
-    ON DELETE SET NULL ON UPDATE CASCADE
-);
-
-CREATE TABLE "Notification" (
-  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
-  "title" TEXT NOT NULL,
-  "message" TEXT NOT NULL,
-  "role" "Role",
-  "isRead" BOOLEAN NOT NULL DEFAULT FALSE,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX "Vehicle_status_idx" ON "Vehicle"("status");
-CREATE INDEX "Vehicle_ownership_idx" ON "Vehicle"("ownership");
-CREATE INDEX "Assessment_status_idx" ON "Assessment"("status");
-CREATE INDEX "GarageOperation_status_idx" ON "GarageOperation"("status");
-CREATE INDEX "Transaction_status_idx" ON "Transaction"("status");
-
-INSERT INTO "User" ("id", "name", "email", "passwordHash", "role")
+INSERT INTO "User" ("id", "name", "email", "passwordHash", "role", "isActive")
 VALUES
-('user-admin-001', 'Admin User', 'admin@valle.com', '$2b$10$z5dVk87mUr0D1.PXCiY1Oe6Q40F3uBIrShSZmcpC/Y7PG5uyyUOia', 'ADMIN'),
-('user-mech-001', 'Mechanic User', 'mechanic@valle.com', '$2b$10$z5dVk87mUr0D1.PXCiY1Oe6Q40F3uBIrShSZmcpC/Y7PG5uyyUOia', 'MECHANIC'),
-('user-store-001', 'Store Keeper User', 'store@valle.com', '$2b$10$z5dVk87mUr0D1.PXCiY1Oe6Q40F3uBIrShSZmcpC/Y7PG5uyyUOia', 'STORE_KEEPER');
+(
+  'demo-user-admin',
+  'Admin User',
+  'admin@valle.com',
+  '$2b$10$9Pp.WZbJf0xP8oM2nsAp7OCfVcw1dcdNTPcqILaWUgDaUuVHg1M8u',
+  'ADMIN',
+  true
+),
+(
+  'demo-user-mechanic',
+  'Jean Marc Mechanic',
+  'mechanic@valle.com',
+  '$2b$10$wkUvKwYz9L3cUbxfrlB1EunaVLMaDmrYAsgRtNSUiKrBT47fwjySK',
+  'MECHANIC',
+  true
+),
+(
+  'demo-user-store',
+  'CFMOTO Store Keeper',
+  'store@valle.com',
+  '$2b$10$rmKlyV0f8.nGaM1YgEPtM.GWOO3jkVz6XNEnYUXUGvZR3.qBV28Bu',
+  'STORE_KEEPER',
+  true
+)
+ON CONFLICT ("email") DO NOTHING;
+
+-- ============================================================
+-- TRANSACTIONS / PURCHASE ORDERS
+-- ============================================================
 
 INSERT INTO "Transaction" (
   "id", "transactionNo", "type", "status", "title", "supplierName",
   "supplierEmail", "customerName", "startDate", "expectedDeliveryDate",
-  "poNumber", "amount", "notes", "createdById"
+  "poNumber", "poAttachmentUrl", "invoiceAttachmentUrl", "grnAttachmentUrl",
+  "grnData", "amount", "notes", "createdById"
 )
 VALUES
-('txn-001', 'TXN-0001', 'PART_PURCHASE', 'IN_PROGRESS', 'Reorder Drive Belts and Brake Pads',
- 'CFMOTO Supplier', 'supplier@example.com', NULL, CURRENT_TIMESTAMP,
- CURRENT_TIMESTAMP + INTERVAL '14 days', 'PO-0001', 78000.00,
- 'Urgent reorder for low-stock workshop items.', 'user-admin-001'),
-('txn-002', 'TXN-0002', 'VEHICLE_ORDER', 'PENDING', 'Customer Order - New Quad Build',
- NULL, NULL, 'External Adventure Client', CURRENT_TIMESTAMP,
- CURRENT_TIMESTAMP + INTERVAL '30 days', 'CUST-PO-2201', 450000.00,
- 'Customer ordered a new quad to be assembled and tested.', 'user-admin-001');
+(
+  'demo-txn-parts-001',
+  'TXN-DEMO-001',
+  'PART_PURCHASE',
+  'IN_PROGRESS',
+  'Reorder CFMOTO Service Parts',
+  'CFMOTO Mauritius Supplier',
+  'supplier@example.com',
+  null,
+  CURRENT_TIMESTAMP - INTERVAL '2 days',
+  CURRENT_TIMESTAMP + INTERVAL '10 days',
+  'PO-DEMO-001',
+  '/uploads/po/PO-DEMO-001.pdf',
+  null,
+  null,
+  null,
+  78500.00,
+  'Demo parts reorder transaction for low-stock items.',
+  'demo-user-admin'
+),
+(
+  'demo-txn-vehicle-001',
+  'TXN-DEMO-002',
+  'VEHICLE_ORDER',
+  'PENDING',
+  'Customer Order - Quad Assembly',
+  null,
+  null,
+  'Adventure Client Ltd',
+  CURRENT_TIMESTAMP - INTERVAL '1 day',
+  CURRENT_TIMESTAMP + INTERVAL '21 days',
+  'CUSTOMER-PO-DEMO-002',
+  '/uploads/po/CUSTOMER-PO-DEMO-002.pdf',
+  null,
+  null,
+  null,
+  450000.00,
+  'Demo customer PO for a new quad build.',
+  'demo-user-admin'
+),
+(
+  'demo-txn-service-001',
+  'TXN-DEMO-003',
+  'SERVICE_INVOICE',
+  'PAID',
+  'Repair Invoice - Buggy Service',
+  null,
+  null,
+  'Walk-in Customer',
+  CURRENT_TIMESTAMP - INTERVAL '8 days',
+  CURRENT_TIMESTAMP - INTERVAL '5 days',
+  null,
+  null,
+  '/uploads/invoices/INV-DEMO-003.pdf',
+  '/uploads/grn/GRN-DEMO-003.pdf',
+  '{"receivedBy":"CFMOTO Store Keeper","receivedDate":"2026-05-09","remarks":"Demo GRN saved for completed transaction"}',
+  12500.00,
+  'Demo paid service invoice transaction.',
+  'demo-user-admin'
+)
+ON CONFLICT ("transactionNo") DO NOTHING;
+
+-- ============================================================
+-- VEHICLES
+-- ============================================================
 
 INSERT INTO "Vehicle" (
   "id", "plateNumber", "vin", "vehicleType", "ownership", "ownerName",
-  "companyName", "deliveryPersonName", "contactNumber", "email", "manufacturer",
-  "status", "currentHourMeter", "checkInDateTime", "expectedDeliveryDate",
-  "notes", "createdById", "transactionId"
+  "companyName", "deliveryPersonName", "contactNumber", "email",
+  "manufacturer", "status", "currentHourMeter", "checkInDateTime",
+  "expectedDeliveryDate", "notes", "createdById", "transactionId"
 )
 VALUES
-('veh-001', 'CFM-1042', 'LCELV1Z42P6001042', 'Quad', 'INTERNAL', 'Vallé Internal Fleet',
- NULL, NULL, NULL, NULL, 'CFMOTO', 'UNDER_REPAIR', 1180,
- CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP + INTERVAL '5 days',
- 'Brake issue reported after morning trail.', 'user-admin-001', NULL),
-('veh-002', 'BUG-2201', 'BUGGY-VIN-2201', 'Buggy', 'INTERNAL', 'Vallé Internal Fleet',
- NULL, NULL, NULL, NULL, 'CFMOTO', 'ACTIVE', 820,
- NULL, NULL, 'Ready for customer rides.', 'user-admin-001', NULL),
-('veh-003', 'BUILD-3001', 'BUILD-VIN-3001', 'Quad', 'CUSTOMER_ORDER', 'External Adventure Client',
- 'Adventure Client Ltd', 'Kevin Delivery', '+230 5123 4567', 'client@example.com',
- 'CFMOTO', 'BUILD_IN_PROGRESS', 0,
- CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '30 days',
- 'Vehicle created from customer purchase order.', 'user-admin-001', 'txn-002');
+(
+  'demo-veh-001',
+  'CFM-1042',
+  'LCELV1Z42P6001042',
+  'Quad',
+  'INTERNAL',
+  'Vallé Internal Fleet',
+  null,
+  null,
+  null,
+  null,
+  'CFMOTO',
+  'UNDER_REPAIR',
+  1180,
+  CURRENT_TIMESTAMP - INTERVAL '2 days',
+  CURRENT_TIMESTAMP + INTERVAL '4 days',
+  'Brake issue reported after trail ride.',
+  'demo-user-admin',
+  null
+),
+(
+  'demo-veh-002',
+  'BUG-2201',
+  'BUGGY-VIN-2201',
+  'Buggy',
+  'INTERNAL',
+  'Vallé Internal Fleet',
+  null,
+  null,
+  null,
+  null,
+  'CFMOTO',
+  'ACTIVE',
+  820,
+  null,
+  null,
+  'Ready for operation.',
+  'demo-user-admin',
+  null
+),
+(
+  'demo-veh-003',
+  'EXT-7788',
+  'EXT-VIN-7788',
+  'Jeep',
+  'EXTERNAL',
+  'External Customer',
+  'Island Tours Ltd',
+  'Kevin Delivery',
+  '+230 5123 4567',
+  'client@example.com',
+  'Jeep',
+  'UNDER_REPAIR',
+  1540,
+  CURRENT_TIMESTAMP - INTERVAL '1 day',
+  CURRENT_TIMESTAMP + INTERVAL '7 days',
+  'External vehicle checked in by delivery person.',
+  'demo-user-mechanic',
+  null
+),
+(
+  'demo-veh-004',
+  'BUILD-3001',
+  'BUILD-VIN-3001',
+  'Quad',
+  'CUSTOMER_ORDER',
+  'Adventure Client Ltd',
+  'Adventure Client Ltd',
+  'Ravi Delivery',
+  '+230 5988 4411',
+  'orders@example.com',
+  'CFMOTO',
+  'BUILD_IN_PROGRESS',
+  0,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP + INTERVAL '21 days',
+  'Vehicle created from customer PO and awaiting assembly.',
+  'demo-user-admin',
+  'demo-txn-vehicle-001'
+)
+ON CONFLICT ("plateNumber") DO NOTHING;
+
+-- ============================================================
+-- INVENTORY ITEMS
+-- ============================================================
 
 INSERT INTO "InventoryItem" (
   "id", "sku", "name", "category", "barcode", "currentStock", "reorderLevel",
   "costPrice", "sellingPrice", "supplierName", "supplierEmail", "location"
 )
 VALUES
-('inv-001', 'CF-OIL-221', 'Oil Filter CFMOTO', 'Service Parts', '889102210', 7, 10, 250.00, 450.00, 'CFMOTO Supplier', 'supplier@example.com', 'Quad Store'),
-('inv-002', 'CF-BRK-110', 'Brake Pad Set', 'Brake System', '889100110', 34, 12, 850.00, 1250.00, 'CFMOTO Supplier', 'supplier@example.com', 'Buggy Bay'),
-('inv-003', 'CF-BLT-501', 'Drive Belt', 'Transmission', '889105501', 4, 8, 2600.00, 3800.00, 'CFMOTO Supplier', 'supplier@example.com', 'Workshop'),
-('inv-004', 'CF-SPK-330', 'Spark Plug', 'Engine Parts', '889103330', 58, 20, 150.00, 290.00, 'CFMOTO Supplier', 'supplier@example.com', 'CFMOTO Store');
+(
+  'demo-inv-001',
+  'CF-OIL-221',
+  'Oil Filter CFMOTO',
+  'Service Parts',
+  '889102210',
+  7,
+  10,
+  250.00,
+  450.00,
+  'CFMOTO Mauritius Supplier',
+  'supplier@example.com',
+  'Shelf A1'
+),
+(
+  'demo-inv-002',
+  'CF-BRK-110',
+  'Brake Pad Set',
+  'Brake System',
+  '889100110',
+  34,
+  12,
+  850.00,
+  1250.00,
+  'CFMOTO Mauritius Supplier',
+  'supplier@example.com',
+  'Brake Bay'
+),
+(
+  'demo-inv-003',
+  'CF-BLT-501',
+  'Drive Belt',
+  'Transmission',
+  '889105501',
+  4,
+  8,
+  2600.00,
+  3800.00,
+  'CFMOTO Mauritius Supplier',
+  'supplier@example.com',
+  'Shelf B2'
+),
+(
+  'demo-inv-004',
+  'CF-SPK-330',
+  'Spark Plug',
+  'Engine Parts',
+  '889103330',
+  58,
+  20,
+  150.00,
+  290.00,
+  'CFMOTO Mauritius Supplier',
+  'supplier@example.com',
+  'Shelf C1'
+)
+ON CONFLICT ("sku") DO NOTHING;
+
+-- ============================================================
+-- ASSESSMENTS
+-- ============================================================
 
 INSERT INTO "Assessment" (
   "id", "ticketNo", "vehicleId", "mechanicId", "status", "issuesDetected",
-  "conclusion", "requiredParts", "photos"
+  "conclusion", "requiredParts", "reopenReason", "reopenedById", "reopenedAt",
+  "photos"
 )
 VALUES
-('asm-001', 'ASM-1001', 'veh-001', 'user-mech-001', 'READY_FOR_PARTS',
- 'Brake noise and weak stopping response.',
- 'Replace front brake pads and inspect brake fluid.',
- '[{"partName":"Brake Pad Set","quantity":2},{"partName":"Oil Filter CFMOTO","quantity":1}]',
- '[]'),
-('asm-002', 'ASM-1002', 'veh-002', 'user-mech-001', 'COMPLETED',
- 'Routine service due.',
- 'Oil and filter replacement completed.',
- '[{"partName":"Oil Filter CFMOTO","quantity":1}]',
- '[]');
+(
+  'demo-asm-001',
+  'ASM-DEMO-1001',
+  'demo-veh-001',
+  'demo-user-mechanic',
+  'READY_FOR_PARTS',
+  'Brake noise and weak stopping response.',
+  'Replace brake pads and inspect brake fluid.',
+  '[{"partName":"Brake Pad Set","quantity":2},{"partName":"Oil Filter CFMOTO","quantity":1}]',
+  null,
+  null,
+  null,
+  '[]'
+),
+(
+  'demo-asm-002',
+  'ASM-DEMO-1002',
+  'demo-veh-002',
+  'demo-user-mechanic',
+  'COMPLETED',
+  'Routine service due.',
+  'Oil filter replaced and service completed.',
+  '[{"partName":"Oil Filter CFMOTO","quantity":1},{"partName":"Spark Plug","quantity":2}]',
+  null,
+  null,
+  null,
+  '[]'
+),
+(
+  'demo-asm-003',
+  'ASM-DEMO-1003',
+  'demo-veh-003',
+  'demo-user-mechanic',
+  'REOPENED',
+  'Engine vibration under load.',
+  'Additional belt inspection required.',
+  '[{"partName":"Drive Belt","quantity":1}]',
+  'Mechanic found extra belt wear after initial inspection.',
+  'demo-user-mechanic',
+  CURRENT_TIMESTAMP - INTERVAL '3 hours',
+  '[]'
+)
+ON CONFLICT ("ticketNo") DO NOTHING;
+
+-- ============================================================
+-- GARAGE OPERATIONS
+-- ============================================================
 
 INSERT INTO "GarageOperation" (
   "id", "processNo", "vehicleId", "assessmentId", "processType", "status",
   "proceduresPerformed", "partsUsed", "mechanicId", "checkInDateTime",
-  "startDateTime", "laborHours", "currentHourMeter", "nextServiceDueAtHours",
-  "paymentDone", "photos"
+  "startDateTime", "endDateTime", "laborHours", "currentHourMeter",
+  "nextServiceDueAtHours", "invoiceAttachmentUrl", "paymentDone", "photos"
 )
 VALUES
-('gop-001', 'PRC-501', 'veh-001', 'asm-001', 'REPAIR', 'IN_PROGRESS',
- 'Inspecting brake system and preparing vehicle for brake pad replacement.',
- '[{"partName":"Brake Pad Set","quantity":2}]',
- 'user-mech-001', CURRENT_TIMESTAMP - INTERVAL '2 days',
- CURRENT_TIMESTAMP - INTERVAL '1 day', 2.50, 1180, 1250, FALSE, '[]'),
-('gop-002', 'PRC-502', 'veh-002', 'asm-002', 'SERVICING', 'COMPLETED',
- 'Oil filter replaced and routine service completed.',
- '[{"partName":"Oil Filter CFMOTO","quantity":1}]',
- 'user-mech-001', CURRENT_TIMESTAMP - INTERVAL '10 days',
- CURRENT_TIMESTAMP - INTERVAL '9 days', 1.25, 820, 900, TRUE, '[]');
+(
+  'demo-gop-001',
+  'PRC-DEMO-501',
+  'demo-veh-001',
+  'demo-asm-001',
+  'REPAIR',
+  'IN_PROGRESS',
+  'Inspecting brake system and preparing replacement.',
+  '[{"partName":"Brake Pad Set","quantity":2}]',
+  'demo-user-mechanic',
+  CURRENT_TIMESTAMP - INTERVAL '2 days',
+  CURRENT_TIMESTAMP - INTERVAL '1 day',
+  null,
+  2.50,
+  1180,
+  1250,
+  null,
+  false,
+  '[]'
+),
+(
+  'demo-gop-002',
+  'PRC-DEMO-502',
+  'demo-veh-002',
+  'demo-asm-002',
+  'SERVICING',
+  'COMPLETED',
+  'Oil filter replaced and service checklist completed.',
+  '[{"partName":"Oil Filter CFMOTO","quantity":1},{"partName":"Spark Plug","quantity":2}]',
+  'demo-user-mechanic',
+  CURRENT_TIMESTAMP - INTERVAL '10 days',
+  CURRENT_TIMESTAMP - INTERVAL '9 days',
+  CURRENT_TIMESTAMP - INTERVAL '9 days' + INTERVAL '2 hours',
+  1.25,
+  820,
+  900,
+  '/uploads/invoices/INV-PRC-DEMO-502.pdf',
+  true,
+  '[]'
+),
+(
+  'demo-gop-003',
+  'PRC-DEMO-503',
+  'demo-veh-004',
+  null,
+  'ASSEMBLY',
+  'PENDING',
+  'Customer quad build pending mechanic start.',
+  '[]',
+  'demo-user-mechanic',
+  CURRENT_TIMESTAMP,
+  null,
+  null,
+  null,
+  0,
+  50,
+  null,
+  false,
+  '[]'
+)
+ON CONFLICT ("processNo") DO NOTHING;
 
-INSERT INTO "Notification" ("title", "message", "role")
+-- ============================================================
+-- NOTIFICATIONS
+-- ============================================================
+
+INSERT INTO "Notification" ("id", "title", "message", "role", "isRead")
 VALUES
-('Low Stock Alert', 'Drive Belt stock is below reorder level.', 'STORE_KEEPER'),
-('Parts Required', 'Assessment ASM-1001 requires parts issuance.', 'STORE_KEEPER'),
-('Garage Work Assigned', 'Garage operation PRC-501 is assigned to you.', 'MECHANIC'),
-('Vehicle Build Request', 'Customer vehicle BUILD-3001 is ready for assembly workflow.', 'MECHANIC'),
-('Transaction Update', 'Transaction TXN-0001 is currently in progress.', 'ADMIN');
+(
+  'demo-note-admin-001',
+  'New Customer Order',
+  'Customer order transaction TXN-DEMO-002 is pending vehicle build.',
+  'ADMIN',
+  false
+),
+(
+  'demo-note-mech-001',
+  'Garage Work Assigned',
+  'Garage operation PRC-DEMO-501 is assigned to you.',
+  'MECHANIC',
+  false
+),
+(
+  'demo-note-mech-002',
+  'Vehicle Build Request',
+  'Vehicle BUILD-3001 is ready for assembly workflow.',
+  'MECHANIC',
+  false
+),
+(
+  'demo-note-store-001',
+  'Parts Required',
+  'Assessment ASM-DEMO-1001 requires parts issuance.',
+  'STORE_KEEPER',
+  false
+),
+(
+  'demo-note-store-002',
+  'Low Stock Alert',
+  'Drive Belt stock is below reorder level.',
+  'STORE_KEEPER',
+  false
+);
+
+-- ============================================================
+-- QUICK CHECK QUERIES
+-- ============================================================
+
+SELECT 'User' AS table_name, COUNT(*) AS rows FROM "User"
+UNION ALL SELECT 'Transaction', COUNT(*) FROM "Transaction"
+UNION ALL SELECT 'Vehicle', COUNT(*) FROM "Vehicle"
+UNION ALL SELECT 'InventoryItem', COUNT(*) FROM "InventoryItem"
+UNION ALL SELECT 'Assessment', COUNT(*) FROM "Assessment"
+UNION ALL SELECT 'GarageOperation', COUNT(*) FROM "GarageOperation"
+UNION ALL SELECT 'Notification', COUNT(*) FROM "Notification";
