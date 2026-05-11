@@ -1,89 +1,48 @@
-# Vallé GMS Backend
-## NestJS + PostgreSQL + Prisma API
+# Vallé Garage Backend
 
-Production-ready backend starter for the Vallé Garage & Spare Parts Management frontend.
+NestJS + Prisma + PostgreSQL backend compatible with the Vallé Garage React frontend.
 
-## Included
-- NestJS API
-- PostgreSQL database
-- Prisma ORM
-- JWT authentication
-- Role guards: Admin, Mechanic, Store Keeper
-- Vehicles, assessments, garage operations, inventory, transactions, reports and notifications
-- Prisma seed data and raw SQL database file
+## Demo logins
 
-## Requirements
-Install:
-- Node.js 18+
-- PostgreSQL 14+
-- npm
-
-## 1. Create PostgreSQL database
-Open PowerShell:
-
-```powershell
-psql -U postgres
+```txt
+admin@vallepark.com / password123
+mechanic@vallepark.com / password123
+store@vallepark.com / password123
 ```
 
-Inside psql:
+## Setup
+
+1. Create PostgreSQL database:
 
 ```sql
-CREATE DATABASE valle_gms;
-\q
+CREATE DATABASE valle_garage;
 ```
 
-## 2. Configure `.env`
-
-```powershell
-copy .env.example .env
-notepad .env
-```
-
-Update your PostgreSQL password:
+2. Copy `.env.example` to `.env` and update your password:
 
 ```env
-DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/valle_gms?schema=public"
-JWT_SECRET="change_this_secret_before_production"
+DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/valle_garage?schema=public"
+JWT_SECRET="valle_garage_secret_2026_change_in_production"
 JWT_EXPIRES_IN="1d"
 PORT=3000
 FRONTEND_URL="http://localhost:5173"
 ```
 
-## 3. Install packages
+3. Install and prepare DB:
 
 ```powershell
 npm install
-```
-
-## 4. Create tables and seed data
-
-```powershell
 npx prisma generate
 npx prisma db push
 npm run db:seed
-```
-
-## 5. Run API
-
-```powershell
 npm run start:dev
 ```
 
-API runs at:
+API: `http://localhost:3000/api`
+Swagger: `http://localhost:3000/api/docs`
 
-```txt
-http://localhost:3000/api
-```
+## Frontend connection
 
-## Demo login credentials
-
-```txt
-admin@valle.com / password123
-mechanic@valle.com / password123
-store@valle.com / password123
-```
-
-## Connect frontend
 In frontend `.env`:
 
 ```env
@@ -92,113 +51,28 @@ VITE_API_URL=http://localhost:3000/api
 
 ## Main endpoints
 
-### Auth
 - `POST /api/auth/login`
 - `GET /api/auth/me`
-
-### Users
-- `GET /api/users`
-- `POST /api/users`
-- `PATCH /api/users/:id`
-
-### Vehicles
-- `GET /api/vehicles`
-- `GET /api/vehicles/:id`
-- `POST /api/vehicles`
-- `PATCH /api/vehicles/:id`
-
-### Assessments
-- `GET /api/assessments`
-- `POST /api/assessments`
+- `GET/POST/PATCH /api/users`
+- `GET/POST/PATCH /api/vehicles`
+- `GET/POST/PATCH /api/assessments`
 - `POST /api/assessments/:id/reopen`
 - `POST /api/assessments/:id/issue-parts`
 - `POST /api/assessments/:id/complete`
-
-### Inventory
-- `GET /api/inventory`
-- `GET /api/inventory/low-stock`
-- `POST /api/inventory`
-- `PATCH /api/inventory/:id`
-
-### Garage Ops
-- `GET /api/garage-ops`
-- `POST /api/garage-ops`
-- `PATCH /api/garage-ops/:id`
-
-### Transactions
-- `GET /api/transactions`
-- `POST /api/transactions`
-- `PATCH /api/transactions/:id`
+- `GET/POST/PATCH /api/garage-ops`
+- `GET/POST/PATCH /api/inventory`
+- `GET/POST/PATCH /api/transactions`
 - `POST /api/transactions/:id/complete-with-grn`
-
-### Reports and notifications
 - `GET /api/reports/dashboard`
 - `GET /api/reports/maintenance-history`
 - `GET /api/notifications`
 
-## Production build
+## Manual SQL seed alternative
+
+After `npx prisma db push`, run:
 
 ```powershell
-npm run build
-npm run start:prod
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -d valle_garage -f ".\database\valle_garage.sql"
 ```
 
-For a local server without Docker, use PM2:
-
-```powershell
-npm install -g pm2
-npm run build
-pm2 start dist/main.js --name valle-gms-api
-pm2 save
-```
-
-## Database viewer
-
-```powershell
-npx prisma studio
-```
-
----
-
-## API Test Bot
-
-This project includes a Python Postman-like test bot that validates the backend against PostgreSQL and the frontend workflows.
-
-Start the backend first:
-
-```powershell
-npm run start:dev
-```
-
-Then open a second terminal and run:
-
-```powershell
-python tools/api_test_bot.py --base-url http://localhost:3000/api
-```
-
-The bot writes reports to:
-
-```txt
-test-results/
-```
-
-Files generated:
-
-- `api-test-results-<run_id>.json`
-- `api-test-report-<run_id>.md`
-- `api-test-payloads-<run_id>.json`
-
-See:
-
-```txt
-API_TESTING_GUIDE.md
-API_REVIEW_AND_FIX_REPORT.md
-```
-
-## Frontend-compatible demo credentials
-
-```txt
-Admin:        admin@valle.com / admin123
-Mechanic:     mechanic@valle.com / mech123
-Store Keeper: store@valle.com / store123
-```
+Use your PostgreSQL version folder if not `18`.

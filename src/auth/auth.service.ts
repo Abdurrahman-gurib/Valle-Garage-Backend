@@ -8,9 +8,25 @@ import { normalizeRole } from '../common/utils';
 export class AuthService {
   constructor(private prisma: PrismaService, private jwt: JwtService) {}
 
+  private emailCandidates(email: string) {
+    const normalized = String(email || '').trim().toLowerCase();
+    const candidates = new Set<string>();
+    if (normalized) candidates.add(normalized);
+    if (normalized.endsWith('@vallepark.com')) {
+      candidates.add(normalized.replace('@vallepark.com', '@valle.com'));
+    }
+    if (normalized.endsWith('@valle.com')) {
+      candidates.add(normalized.replace('@valle.com', '@vallepark.com'));
+    }
+    return Array.from(candidates);
+  }
+
   async login(email: string, password: string, role?: string) {
-    const normalizedEmail = String(email || '').trim().toLowerCase();
-    const user = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
+    const candidates = this.emailCandidates(email);
+
+    const user = await this.prisma.user.findFirst({
+      where: { email: { in: candidates } },
+    });
 
     if (!user || !user.isActive) {
       throw new UnauthorizedException('Invalid login details');
@@ -32,10 +48,13 @@ export class AuthService {
       name: user.name,
     };
 
+    const accessToken = await this.jwt.signAsync(payload);
     const { passwordHash, ...safeUser } = user;
 
     return {
-      accessToken: await this.jwt.signAsync(payload),
+      accessToken,
+      access_token: accessToken,
+      token: accessToken,
       user: safeUser,
     };
   }

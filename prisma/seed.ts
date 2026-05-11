@@ -12,20 +12,33 @@ async function main() {
   await prisma.transaction.deleteMany();
   await prisma.user.deleteMany();
 
-  const adminHash = await bcrypt.hash('admin123', 10);
-  const mechanicHash = await bcrypt.hash('mech123', 10);
-  const storeHash = await bcrypt.hash('store123', 10);
+  const passwordHash = await bcrypt.hash('password123', 10);
 
   const admin = await prisma.user.create({
-    data: { name: 'Admin User', email: 'admin@valle.com', passwordHash: adminHash, role: Role.ADMIN },
+    data: {
+      name: 'Admin User',
+      email: 'admin@vallepark.com',
+      passwordHash,
+      role: Role.ADMIN,
+    },
   });
 
   const mechanic = await prisma.user.create({
-    data: { name: 'Mechanic User', email: 'mechanic@valle.com', passwordHash: mechanicHash, role: Role.MECHANIC },
+    data: {
+      name: 'Mechanic User',
+      email: 'mechanic@vallepark.com',
+      passwordHash,
+      role: Role.MECHANIC,
+    },
   });
 
-  await prisma.user.create({
-    data: { name: 'Store Keeper User', email: 'store@valle.com', passwordHash: storeHash, role: Role.STORE_KEEPER },
+  const store = await prisma.user.create({
+    data: {
+      name: 'Store Keeper User',
+      email: 'store@vallepark.com',
+      passwordHash,
+      role: Role.STORE_KEEPER,
+    },
   });
 
   const txn = await prisma.transaction.create({
@@ -85,6 +98,7 @@ async function main() {
       { sku: 'CF-OIL-221', name: 'Oil Filter CFMOTO', category: 'Service Parts', barcode: '889102210', currentStock: 7, reorderLevel: 10, costPrice: '250', sellingPrice: '450', supplierName: 'CFMOTO Supplier', supplierEmail: 'supplier@example.com', location: 'Quad Store' },
       { sku: 'CF-BRK-110', name: 'Brake Pad Set', category: 'Brake System', barcode: '889100110', currentStock: 34, reorderLevel: 12, costPrice: '850', sellingPrice: '1250', supplierName: 'CFMOTO Supplier', supplierEmail: 'supplier@example.com', location: 'Buggy Bay' },
       { sku: 'CF-BLT-501', name: 'Drive Belt', category: 'Transmission', barcode: '889105501', currentStock: 4, reorderLevel: 8, costPrice: '2600', sellingPrice: '3800', supplierName: 'CFMOTO Supplier', supplierEmail: 'supplier@example.com', location: 'Workshop' },
+      { sku: 'CF-SPK-330', name: 'Spark Plug', category: 'Engine Parts', barcode: '889103330', currentStock: 58, reorderLevel: 20, costPrice: '150', sellingPrice: '290', supplierName: 'CFMOTO Supplier', supplierEmail: 'supplier@example.com', location: 'CFMOTO Store' },
     ],
   });
 
@@ -116,6 +130,7 @@ async function main() {
       laborHours: '2.50',
       currentHourMeter: 1180,
       nextServiceDueAtHours: 1250,
+      paymentDone: false,
       photos: [],
     },
   });
@@ -145,9 +160,9 @@ async function main() {
   });
 
   console.log('Seed complete. Demo logins:');
-  console.log('Admin: admin@valle.com / admin123');
-  console.log('Mechanic: mechanic@valle.com / mech123');
-  console.log('Store Keeper: store@valle.com / store123');
+  console.log('Admin: admin@vallepark.com / password123');
+  console.log('Mechanic: mechanic@vallepark.com / password123');
+  console.log('Store Keeper: store@vallepark.com / password123');
 }
 
 main().finally(() => prisma.$disconnect());
